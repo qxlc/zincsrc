@@ -357,6 +357,17 @@ if config['Spread modifications'].Options.Enabled then
 end
 
 
+-- LocalScript (put in StarterPlayerScripts)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Wait until player is fully loaded (for safety)
+while not player do
+    task.wait()
+    player = Players.LocalPlayer
+end
+
 -- List of allowed game IDs
 local allowedPlaceIds = {
     [2788229376] = true,
@@ -370,11 +381,12 @@ local allowedPlaceIds = {
 -- Get current place ID
 local currentPlaceId = game.PlaceId
 
--- Check if the current place is allowed
+-- Immediately kick the player if not in allowed place
 if not allowedPlaceIds[currentPlaceId] then
-    -- Kick the local player if not in the allowed game
-    local Players = game:GetService("Players")
-    local player = Players.LocalPlayer
-
-    player:Kick("this game is supported lil bro")
+    player:Kick("why u tryna join this game dude")
+    -- Optionally force-stop script execution (redundant if Kick succeeds)
+    while true do
+        task.wait()
+    end
 end
+
