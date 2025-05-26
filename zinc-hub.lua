@@ -48,14 +48,14 @@ if config['Silent Aim'].Enabled then
     end)
     setreadonly(mt, true)
 end
-
 if config['Camlock'].Enabled then
-    local camlockKey = config['Camlock'].Keybind:lower()
     local camlockActive = false
     local camlockTarget = nil
+    local toggleKey = "v"  -- change this if you want a different toggle key
 
+    -- Toggle camlock on/off with the V key
     Mouse.KeyDown:Connect(function(key)
-        if key == camlockKey then
+        if key:lower() == toggleKey then
             camlockActive = not camlockActive
             if camlockActive then
                 camlockTarget = getClosestPlayer(config.Range['Camlock'])
@@ -67,9 +67,9 @@ if config['Camlock'].Enabled then
 
     RunService.RenderStepped:Connect(function()
         if camlockActive and camlockTarget and camlockTarget.Character then
-            local cam = workspace.CurrentCamera
-            local part = camlockTarget.Character[config['Camlock']['Hit Location'].Parts[1]]
+            local part = camlockTarget.Character:FindFirstChild(config['Camlock']['Hit Location'].Parts[1])
             if part then
+                local cam = workspace.CurrentCamera
                 cam.CFrame = cam.CFrame:Lerp(
                     CFrame.new(cam.CFrame.Position, part.Position),
                     config['Camlock'].Value.Snappiness
