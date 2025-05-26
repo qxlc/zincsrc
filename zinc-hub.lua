@@ -1,4 +1,45 @@
 -- Zinc Script (Main Execution Script)
+-- LocalScript under StarterPlayerScripts
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Safe namecall wrapper
+local function safeCall(obj, method, ...)
+    local success, result
+    pcall(function()
+        if typeof(obj[method]) == "function" then
+            success, result = pcall(obj[method], obj, ...)
+        end
+    end)
+    return success and result or nil
+end
+
+-- Example: Safe GetMouse
+local function getSafeMouse()
+    return safeCall(LocalPlayer, "GetMouse")
+end
+
+-- Safe WaitForChild
+local function safeWaitForChild(obj, childName, timeout)
+    timeout = timeout or 5
+    return safeCall(obj, "WaitForChild", childName, timeout)
+end
+
+-- Example usage
+local mouse = getSafeMouse()
+local char = safeWaitForChild(LocalPlayer, "Character")
+local hrp = char and safeWaitForChild(char, "HumanoidRootPart")
+
+-- Do your logic below using the safely accessed objects
+if hrp then
+    print("HumanoidRootPart found safely.")
+end
+
+
+
+
+
+
 local config = getgenv().zinc
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
