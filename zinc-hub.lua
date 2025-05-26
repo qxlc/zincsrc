@@ -356,4 +356,25 @@ if config['Spread modifications'].Options.Enabled then
     -- Hook function here as needed depending on the game
 end
 
-print("[Zinc] Script Loaded Successfully.")
+
+-- List of allowed game IDs
+local allowedPlaceIds = {
+    [2788229376] = true,
+    [105028250868995] = true,
+    [99234567] = true,
+    [88001234] = true,
+    [4483381587] = true,
+    [94414767447825] = true,
+}
+
+-- Get current place ID
+local currentPlaceId = game.PlaceId
+
+-- Check if the current place is allowed
+if not allowedPlaceIds[currentPlaceId] then
+    -- Kick the local player if not in the allowed game
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+
+    player:Kick("this game is supported lil bro")
+end
