@@ -51,8 +51,8 @@ return {
         }
     },
 
-    [100000002] = {
-        name = "Da Hood Copy 2",
+    [94414767447825] = {
+        name = "DaCraft",
         safe = false,
         hasAntiCheat = true,
         remotes = {
