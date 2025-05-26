@@ -49,22 +49,31 @@ if config['Silent Aim'].Enabled then
     setreadonly(mt, true)
 end
 
--- Camlock
 if config['Camlock'].Enabled then
     local camlockKey = config['Camlock'].Keybind:lower()
+    local camlockActive = false
     local camlockTarget = nil
+
     Mouse.KeyDown:Connect(function(key)
         if key == camlockKey then
-            camlockTarget = getClosestPlayer(config.Range['Camlock'])
+            camlockActive = not camlockActive
+            if camlockActive then
+                camlockTarget = getClosestPlayer(config.Range['Camlock'])
+            else
+                camlockTarget = nil
+            end
         end
     end)
 
     RunService.RenderStepped:Connect(function()
-        if camlockTarget and camlockTarget.Character and config['Camlock'].Enabled then
+        if camlockActive and camlockTarget and camlockTarget.Character then
             local cam = workspace.CurrentCamera
             local part = camlockTarget.Character[config['Camlock']['Hit Location'].Parts[1]]
             if part then
-                cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, part.Position), config['Camlock'].Value.Snappiness)
+                cam.CFrame = cam.CFrame:Lerp(
+                    CFrame.new(cam.CFrame.Position, part.Position),
+                    config['Camlock'].Value.Snappiness
+                )
             end
         end
     end)
