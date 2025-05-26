@@ -243,7 +243,7 @@ end
 if config['Camlock'].Enabled then
     local camlockActive = false
     local camlockTarget = nil
-    local toggleKey = "V"
+    local toggleKey = "v"
     local camera = workspace.CurrentCamera
 
     -- Get the closest player to crosshair
@@ -271,7 +271,7 @@ if config['Camlock'].Enabled then
         return closestPlayer
     end
 
-    -- Toggle camlock
+    -- Toggle camlock with the V key
     Mouse.KeyDown:Connect(function(key)
         if key:lower() == toggleKey then
             camlockActive = not camlockActive
