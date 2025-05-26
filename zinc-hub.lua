@@ -166,4 +166,3 @@ if config['Spread modifications'].Options.Enabled then
     local spread = config['Spread modifications'].Options.Multiplier
     -- Hook function here as needed depending on the game
 end
-
