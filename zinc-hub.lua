@@ -49,22 +49,59 @@ if config['Silent Aim'].Enabled then
     end)
     setreadonly(mt, true)
 end
+
+-- Camlock with V Key Toggle and Aim-Based Targeting
 if config['Camlock'].Enabled then
     local camlockActive = false
     local camlockTarget = nil
-    local toggleKey = "v"  -- change this if you want a different toggle key
+    local toggleKey = "v"  -- Key to toggle camlock
 
-    -- Toggle camlock on/off with the V key
+    local function getTargetUnderCrosshair()
+        local cam = workspace.CurrentCamera
+        local rayOrigin = cam.CFrame.Position
+        local rayDirection = cam.CFrame.LookVector * 10000 -- cast far into the distance
+        local raycastParams = RaycastParams.new()
+        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+        raycastParams.FilterDescendantsInstances = {Players.LocalPlayer.Character}
+        raycastParams.IgnoreWater = true
+
+        local result = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+        if result and result.Instance then
+            local hitPart = result.Instance
+            local character = hitPart:FindFirstAncestorOfClass("Model")
+            if character and Players:GetPlayerFromCharacter(character) then
+                return Players:GetPlayerFromCharacter(character)
+            end
+        end
+        return nil
+    end
+
+    -- Toggle Camlock with V key
     Mouse.KeyDown:Connect(function(key)
         if key:lower() == toggleKey then
             camlockActive = not camlockActive
             if camlockActive then
-                camlockTarget = getClosestPlayer(config.Range['Camlock'])
+                camlockTarget = getTargetUnderCrosshair()
             else
                 camlockTarget = nil
             end
         end
     end)
+
+    RunService.RenderStepped:Connect(function()
+        if camlockActive and camlockTarget and camlockTarget.Character then
+            local part = camlockTarget.Character:FindFirstChild(config['Camlock']['Hit Location'].Parts[1])
+            if part then
+                local cam = workspace.CurrentCamera
+                cam.CFrame = cam.CFrame:Lerp(
+                    CFrame.new(cam.CFrame.Position, part.Position),
+                    config['Camlock'].Value.Snappiness
+                )
+            end
+        end
+    end)
+end
+
 
     RunService.RenderStepped:Connect(function()
         if camlockActive and camlockTarget and camlockTarget.Character then
