@@ -12,8 +12,8 @@ return {
 
     [105028250868995] = {
         name = "Derhood",
-        safe = true,
-        hasAntiCheat = false,
+        safe = false,
+        hasAntiCheat = true,
         remotes = {
             HitPart = "DerEvent",
             Shoot = "DerShoot"
