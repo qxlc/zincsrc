@@ -10,7 +10,7 @@ return {
         }
     },
 
-    [66654135] = {
+    [105028250868995] = {
         name = "Derhood",
         safe = true,
         hasAntiCheat = false,
