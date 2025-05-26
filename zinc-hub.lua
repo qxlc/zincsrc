@@ -25,6 +25,7 @@ local function predict(pos, vel, pred)
     return pos + (vel * pred)
 end
 
+
 -- Silent Aim (Example Hook)
 if config['Silent Aim'].Enabled then
     local mt = getrawmetatable(game)
