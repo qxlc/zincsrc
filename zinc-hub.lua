@@ -138,4 +138,3 @@ if config['Spread modifications'].Options.Enabled then
     -- Hook function here as needed depending on the game
 end
 
-print("[Zinc] Script Loaded Successfully.")
