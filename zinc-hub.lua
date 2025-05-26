@@ -50,51 +50,57 @@ if config['Silent Aim'].Enabled then
     setreadonly(mt, true)
 end
 
--- Camlock with V Key Toggle and Aim-Based Targeting
+-- Camlock
 if config['Camlock'].Enabled then
     local camlockActive = false
     local camlockTarget = nil
-    local toggleKey = "v"  -- Key to toggle camlock
+    local toggleKey = "v"
+    local camera = workspace.CurrentCamera
 
-    local function getTargetUnderCrosshair()
-        local cam = workspace.CurrentCamera
-        local rayOrigin = cam.CFrame.Position
-        local rayDirection = cam.CFrame.LookVector * 10000 -- cast far into the distance
-        local raycastParams = RaycastParams.new()
-        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-        raycastParams.FilterDescendantsInstances = {Players.LocalPlayer.Character}
-        raycastParams.IgnoreWater = true
+    -- Get the closest player to crosshair
+    local function getClosestToCrosshair(maxDistance)
+        local closestPlayer = nil
+        local closestDistance = maxDistance or math.huge
+        local screenCenter = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
 
-        local result = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
-        if result and result.Instance then
-            local hitPart = result.Instance
-            local character = hitPart:FindFirstAncestorOfClass("Model")
-            if character and Players:GetPlayerFromCharacter(character) then
-                return Players:GetPlayerFromCharacter(character)
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local part = player.Character:FindFirstChild(config['Camlock']['Hit Location'].Parts[1])
+                if part then
+                    local screenPos, onScreen = camera:WorldToViewportPoint(part.Position)
+                    if onScreen then
+                        local distance = (Vector2.new(screenPos.X, screenPos.Y) - screenCenter).Magnitude
+                        if distance < closestDistance then
+                            closestDistance = distance
+                            closestPlayer = player
+                        end
+                    end
+                end
             end
         end
-        return nil
+
+        return closestPlayer
     end
 
-    -- Toggle Camlock with V key
+    -- Toggle camlock with the V key
     Mouse.KeyDown:Connect(function(key)
         if key:lower() == toggleKey then
             camlockActive = not camlockActive
             if camlockActive then
-                camlockTarget = getTargetUnderCrosshair()
+                camlockTarget = getClosestToCrosshair(config.Range['Camlock'])
             else
                 camlockTarget = nil
             end
         end
     end)
 
+    -- Camlock aim adjustment
     RunService.RenderStepped:Connect(function()
         if camlockActive and camlockTarget and camlockTarget.Character then
             local part = camlockTarget.Character:FindFirstChild(config['Camlock']['Hit Location'].Parts[1])
             if part then
-                local cam = workspace.CurrentCamera
-                cam.CFrame = cam.CFrame:Lerp(
-                    CFrame.new(cam.CFrame.Position, part.Position),
+                camera.CFrame = camera.CFrame:Lerp(
+                    CFrame.new(camera.CFrame.Position, part.Position),
                     config['Camlock'].Value.Snappiness
                 )
             end
@@ -102,20 +108,6 @@ if config['Camlock'].Enabled then
     end)
 end
 
-
-    RunService.RenderStepped:Connect(function()
-        if camlockActive and camlockTarget and camlockTarget.Character then
-            local part = camlockTarget.Character:FindFirstChild(config['Camlock']['Hit Location'].Parts[1])
-            if part then
-                local cam = workspace.CurrentCamera
-                cam.CFrame = cam.CFrame:Lerp(
-                    CFrame.new(cam.CFrame.Position, part.Position),
-                    config['Camlock'].Value.Snappiness
-                )
-            end
-        end
-    end)
-end
 
 -- Trigger Bot
 if config['Trigger bot'].Enabled then
